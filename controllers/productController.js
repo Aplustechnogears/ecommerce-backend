@@ -97,7 +97,7 @@ const ProductController = {
             const product = await productModalObj.findOne({ _id: new ObjectId(record_id) });
             const params = {
                 Bucket: 'anmol-bucket01',
-                Key: images_key[i],
+                Key: product.image_key,
                 Expires: 1200,
             };
             const signed_url = await s3.getSignedUrl('getObject', params);
