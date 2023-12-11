@@ -95,7 +95,13 @@ const ProductController = {
             const record_id = req.params.id;
             const productModalObj = await ProductModel();
             const product = await productModalObj.findOne({ _id: new ObjectId(record_id) });
-            res.status(200).json(product)
+            const params = {
+                Bucket: 'anmol-bucket01',
+                Key: images_key[i],
+                Expires: 1200,
+            };
+            const signed_url = await s3.getSignedUrl('getObject', params;
+            res.status(200).json({ ...product, src: signed_url })
         } catch (error) {
             console.log(' error___', error);
         }
