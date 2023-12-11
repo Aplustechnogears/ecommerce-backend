@@ -100,7 +100,7 @@ const ProductController = {
                 Key: images_key[i],
                 Expires: 1200,
             };
-            const signed_url = await s3.getSignedUrl('getObject', params;
+            const signed_url = await s3.getSignedUrl('getObject', params);
             res.status(200).json({ ...product, src: signed_url })
         } catch (error) {
             console.log(' error___', error);
