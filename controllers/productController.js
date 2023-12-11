@@ -63,7 +63,27 @@ const ProductController = {
 
             const product_list = await productModalObj.find(filters).sort(sort).skip(skip).limit(pageSize).toArray();
             const totalCount = await productModalObj.countDocuments(filters);
-            res.status(200).json({ records: product_list, total_records: totalCount })
+            const images_key = product_list?.map(item => item?.image_key);
+            const images_key_value = {};
+            const signed_url_promises = [];
+
+            for (let i in images_key) {
+                const params = {
+                    Bucket: 'anmol-bucket01',
+                    Key: images_key[i],
+                    Expires: 1200,
+                };
+                signed_url_promises.push(s3.getSignedUrl('getObject', params));
+            }
+            const al_urls_payload = await Promise.allSettled(signed_url_promises);
+
+            for (let i in al_urls_payload) {
+                images_key_value[images_key[i]] = al_urls_payload[i].value;
+            }
+
+            const new_list = product_list.map(item => { return { ...item, image_src: images_key_value[item.image_key] } })
+
+            res.status(200).json({ records: new_list, total_records: totalCount })
 
         } catch (error) {
 
