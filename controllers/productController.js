@@ -1,6 +1,7 @@
 const AWS = require('aws-sdk');
 const { ProductModel } = require('../models/productModel');
 const { ObjectId } = require('mongodb');
+const _ = require('lodash');
 
 AWS.config.update({
     accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -186,10 +187,12 @@ const ProductController = {
                 Key: fileKey,
                 UploadId: fileId,
                 MultipartUpload: {
+
                     // ordering the parts to make sure they are in the right order
                     Parts: _.orderBy(parts, ["PartNumber"], ["asc"]),
                 },
             }
+
             await s3.completeMultipartUpload(multipartParams).promise();
 
             //  store and process attachment here further here.
