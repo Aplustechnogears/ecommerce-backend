@@ -10,6 +10,8 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
+
+const BUCKET_NAME = 'anmol-bucket01'
 const ProductController = {
 
 
@@ -105,7 +107,97 @@ const ProductController = {
         } catch (error) {
             console.log(' error___', error);
         }
-    }
+    },
+
+    initializeMultipartUpload: async (req, res) => {
+        const jsonResponse = {
+            statusCode: status_code.OK,
+            message: "",
+            status: true,
+            data: {}
+        }
+        try {
+
+            let name = Date.now().toString();
+            const multipartParams = {
+                Bucket: BUCKET_NAME,
+                Key: `${name}`,
+                ACL: "bucket-owner-full-control",
+            }
+            const multipartUpload = await s3.createMultipartUpload(multipartParams).promise();
+            jsonResponse.data = {
+                fileId: multipartUpload.UploadId,
+                fileKey: multipartUpload.Key,
+                file_name: name,
+            }
+        }
+
+        catch (error) {
+            jsonResponse.message = error.message;
+            jsonResponse.statusCode = 500
+        } finally {
+            res.status(jsonResponse.status).json({ message: jsonResponse.message })
+
+        }
+    },
+
+    getMultipartPreSignedUrls: async (req, res) => {
+        try {
+
+            const { fileKey, fileId, parts } = req.body
+            const multipartParams = {
+                Bucket: BUCKET_NAME,
+                Key: fileKey,
+                UploadId: fileId,
+            }
+            const promises = []
+            for (let index = 0; index < parts; index++) {
+                promises.push(
+                    s3.getSignedUrlPromise("uploadPart", {
+                        ...multipartParams,
+                        PartNumber: index + 1,
+                    }),
+                )
+            }
+            const signedUrls = await Promise.all(promises)
+            const partSignedUrlList = signedUrls.map((signedUrl, index) => {
+                return {
+                    signedUrl: signedUrl,
+                    PartNumber: index + 1,
+                }
+            })
+            res.status(200).json({
+                parts: partSignedUrlList,
+            })
+        } catch (error) {
+            console.log(error, "bb-->")
+        }
+    },
+
+    finalizeMultipartUpload: async (req, res) => {
+        try {
+
+            const { fileId, fileKey, parts, file_extension, file_name } = req.body
+            const multipartParams = {
+                Bucket: BUCKET_NAME,
+                Key: fileKey,
+                UploadId: fileId,
+                MultipartUpload: {
+                    // ordering the parts to make sure they are in the right order
+                    Parts: _.orderBy(parts, ["PartNumber"], ["asc"]),
+                },
+            }
+            await s3.completeMultipartUpload(multipartParams).promise();
+
+            //  store and process attachment here further here.
+
+            const attachment_details = await s3.headObject({ Bucket: BUCKET_NAME, Key: fileKey }).promise();
+            res.status(200).json(attachment_details)
+
+        } catch (error) {
+            console.log(error, "ccc---->>")
+        }
+    },
 }
 
 module.exports = ProductController;
