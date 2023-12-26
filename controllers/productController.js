@@ -29,23 +29,10 @@ const ProductController = {
             created_at: Date.now(),
             updated_at: Date.now(),
             category: req.body.category,
-            referral: req.body.referral
+            referral: req.body.referral,
+            image_key: req.body.image_key
         }
 
-        // images handle in base64
-        const image_base64 = req.body.image;
-
-        // upload to s3.
-        const buffer = Buffer.from(image_base64, 'base64');
-
-        const params = {
-            Bucket: 'anmol-bucket01',
-            Key: Date.now().toString() + '.png',
-            Body: buffer,
-        };
-
-        const response = await s3.upload({ ...params, ContentType: 'image/png' }).promise();
-        payload.image_key = response.Key;
 
         const productModelObj = await ProductModel();
         const insert_ack = await productModelObj.insertOne(payload)
