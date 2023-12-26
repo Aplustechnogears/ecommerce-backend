@@ -198,7 +198,7 @@ const ProductController = {
             //  store and process attachment here further here.
 
             const attachment_details = await s3.headObject({ Bucket: BUCKET_NAME, Key: fileKey }).promise();
-            res.status(200).json(attachment_details)
+            res.status(200).json({ ...attachment_details, fileKey })
 
         } catch (error) {
             console.log(error, "ccc---->>")
