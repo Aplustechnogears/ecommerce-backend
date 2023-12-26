@@ -10,6 +10,10 @@ AWS.config.update({
 
 const s3 = new AWS.S3();
 
+const status_code = {
+    OK: 200
+}
+
 
 const BUCKET_NAME = 'anmol-bucket01';
 const ProductController = {
