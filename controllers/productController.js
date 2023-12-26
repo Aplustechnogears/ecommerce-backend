@@ -115,7 +115,6 @@ const ProductController = {
     },
 
     initializeMultipartUpload: async (req, res) => {
-        console.log('calle_d___');
         const jsonResponse = {
             statusCode: status_code.OK,
             message: "",
@@ -123,7 +122,6 @@ const ProductController = {
             data: {}
         }
         try {
-
             let name = Date.now().toString();
             const multipartParams = {
                 Bucket: BUCKET_NAME,
@@ -142,8 +140,7 @@ const ProductController = {
             jsonResponse.message = error.message;
             jsonResponse.statusCode = 500
         } finally {
-            res.status(jsonResponse.status).json({ message: jsonResponse.message })
-
+            res.status(jsonResponse.statusCode).json({ message: jsonResponse.message })
         }
     },
 
