@@ -11,7 +11,7 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 
-const BUCKET_NAME = 'anmol-bucket01'
+const BUCKET_NAME = 'anmol-bucket01';
 const ProductController = {
 
 
@@ -94,6 +94,7 @@ const ProductController = {
 
     ProductDetails: async (req, res) => {
         try {
+            console.log('calldddd');
             const record_id = req.params.id;
             const productModalObj = await ProductModel();
             const product = await productModalObj.findOne({ _id: new ObjectId(record_id) });
@@ -110,6 +111,7 @@ const ProductController = {
     },
 
     initializeMultipartUpload: async (req, res) => {
+        console.log('calle_d___');
         const jsonResponse = {
             statusCode: status_code.OK,
             message: "",
