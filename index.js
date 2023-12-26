@@ -16,8 +16,9 @@ app.post('/create-product', ProductController.Create)
 app.get('/product-list', ProductController.ProductList)
 app.get('/product/:id', ProductController.ProductDetails)
 
-app.post('/initialize-upload/:id', ProductController.ProductDetails)
-
+app.post('/initialize-upload', ProductController.initializeMultipartUpload)
+app.post('/getMultipartPreSignedUrls', ProductController.initializeMultipartUpload)
+app.post('finalizeMultipartUpload', ProductController.initializeMultipartUpload)
 
 
 app.listen(PORT, () => {
