@@ -140,7 +140,7 @@ const ProductController = {
             jsonResponse.message = error.message;
             jsonResponse.statusCode = 500
         } finally {
-            res.status(jsonResponse.statusCode).json({ message: jsonResponse.message })
+            res.status(jsonResponse.statusCode).json({ message: jsonResponse.message, data: jsonResponse.data })
         }
     },
 
