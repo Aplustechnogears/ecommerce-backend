@@ -29,7 +29,7 @@ const ProductController = {
             created_at: Date.now(),
             updated_at: Date.now(),
             category: req.body.category,
-            referral: req.body.referral,
+            referral: req.body.link,
             image_key: req.body.image_key
         }
 
